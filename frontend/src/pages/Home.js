@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
@@ -11,6 +12,11 @@ const Home = () => {
     <div className="container">
       {/* サイドバー */}
       <div className="sidebar">
+        <h2 className="title">その他</h2>
+        <ul>
+          <li className="menu-item"><Link to="/create">記事投稿</Link></li>
+        </ul>
+
         <h2 className="title">相談</h2>
         <ul>
           <li className="menu-item"><a href="#">人生相談</a></li>
