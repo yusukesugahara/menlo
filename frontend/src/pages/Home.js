@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
-  const [prompts, setPrompts] = useState([
-    { _id: '1', title: 'ちゃんと答えが返ってくるプロンプトができた' },
-    { _id: '2', title: 'ちゃんと答えが返ってくるプロンプトができた' }
-  ]);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/posts');
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   return (
     <div className="container">
-      {/* サイドバー */}
       <div className="sidebar">
-        <h2 className="title">その他</h2>
-        <ul>
-          <li className="menu-item"><Link to="/create">記事投稿</Link></li>
-        </ul>
-
+        <Link to="/create" className="create-post-button">新しい投稿を作成</Link>
         <h2 className="title">相談</h2>
         <ul>
           <li className="menu-item"><a href="#">人生相談</a></li>
@@ -36,17 +42,15 @@ const Home = () => {
         </ul>
       </div>
 
-      {/* メインコンテンツ */}
       <div className="main-content">
         <h2 className="title">相談</h2>
         <div className="grid">
-          {prompts.map(prompt => (
-            <div className="card" key={prompt._id}>
-              <p className="card-title">{prompt.title}</p>
-              <div className="card-info">
-                <div className="card-info-icon"><img src="" alt="icon" /></div>
-                <p className="card-info-text">名前 日時</p>
-              </div>
+          {posts.map(post => (
+            <div className="card" key={post._id}>
+              <p className="card-title">{post.title}</p>
+              <div className='card-info'>
+                <p className="card-info-text">作成日: {new Date(post.createdAt).toLocaleString()}</p>
+              </div>                
               <div className="button-container">
                 <button className="button">Like</button>
                 <span>12</span>&nbsp;
