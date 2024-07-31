@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Linkをインポート
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import axios from 'axios';
 import './CreatePost.css';
 
 const customStyle = {
   ...dark,
   'code[class*="language-"]': {
     ...dark['code[class*="language-"]'],
-    color: '#ffffff', // 文字を白に設定
-    background: '#000000', // 背景を黒に設定
-    textShadow: 'none', // テキストシャドウを削除
+    color: '#ffffff',
+    background: '#000000',
+    textShadow: 'none',
     border: 'none',
   },
   'pre[class*="language-"]': {
     ...dark['pre[class*="language-"]'],
-    color: '#ffffff', // 文字を白に設定
-    background: '#000000', // 背景を黒に設定
-    textShadow: 'none', // テキストシャドウを削除
+    color: '#ffffff',
+    background: '#000000',
+    textShadow: 'none',
     border: 'none',
   },
 };
@@ -28,14 +29,21 @@ const CreatePost = () => {
   const [content, setContent] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Title:', title);
-    console.log('Content:', content);
-    // フォームをリセット
-    setTitle('');
-    setContent('');
-    setMarkdownContent('');
+    try {
+      const response = await axios.post('http://localhost:5000/api/posts', {
+        title,
+        content: markdownContent,
+      });
+      console.log('Post created:', response.data);
+      // フォームをリセット
+      setTitle('');
+      setContent('');
+      setMarkdownContent('');
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
   };
 
   const handleMarkdownChange = (e) => {
@@ -67,7 +75,7 @@ const CreatePost = () => {
 
   return (
     <div className="create-post-container">
-      <Link to="/" className="home-button">Homeに戻る</Link> {/* Homeに戻るボタンを追加 */}
+      <Link to="/" className="home-button">Homeに戻る</Link>
       <h2 className="title">新しい記事を投稿する</h2>
       <form onSubmit={handleSubmit}>
         <div className="content-preview">
@@ -107,8 +115,8 @@ const CreatePost = () => {
             <li onClick={() => copyToClipboard('1. 項目1')}>順序付きリスト: <code>1. 項目1</code>, <code onClick={() => copyToClipboard('2. 項目2')}>2. 項目2</code></li>
             <li onClick={() => copyToClipboard('- 項目1')}>順序なしリスト: <code>- 項目1</code>, <code onClick={() => copyToClipboard('- 項目2')}>- 項目2</code></li>
           </ul>
-          <li><strong>リンク:</strong> <code onClick={() => copyToClipboard('[リンクテキスト](URL)')} >[リンクテキスト](URL)</code></li>
-          <li><strong>画像:</strong> <code onClick={() => copyToClipboard('![代替テキスト](画像のURL)')} >![代替テキスト](画像のURL)</code></li>
+          <li><strong>リンク:</strong> <code onClick={() => copyToClipboard('[リンクテキスト](URL)')}>[リンクテキスト](URL)</code></li>
+          <li><strong>画像:</strong> <code onClick={() => copyToClipboard('![代替テキスト](画像のURL)')}>![代替テキスト](画像のURL)</code></li>
           <li><strong>インラインコード:</strong> <code onClick={() => copyToClipboard('`コード`')}>`コード`</code></li>
           <li><strong>コードブロック:</strong></li>
           <pre onClick={() => copyToClipboard("```ChatGPT\nコードブロック\n```")}><code>```ChatGPT<br></br>コードブロック<br></br>```</code></pre>
