@@ -2,4 +2,4 @@ https://www.figma.com/proto/LVNps7EamXw9c1bCRMjboZ/Untitled?node-id=0-1&t=YgUxHm
   
   
 backend start:node server.js  
-backend end:nmp start  
+frontend start:nmp start  
