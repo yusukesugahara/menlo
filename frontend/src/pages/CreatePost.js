@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import axios from 'axios';
 import './CreatePost.css';
 
 const customStyle = {
@@ -26,8 +26,26 @@ const customStyle = {
 
 const CreatePost = () => {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/categories');
+        if (response.data && response.data.length > 0) {
+          setCategories(response.data);
+        } else {
+          console.error('No categories found');
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,12 +53,12 @@ const CreatePost = () => {
       const response = await axios.post('http://localhost:5000/api/posts', {
         title,
         content: markdownContent,
+        category: selectedCategory,
       });
       console.log('Post created:', response.data);
-      // フォームをリセット
       setTitle('');
-      setContent('');
       setMarkdownContent('');
+      setSelectedCategory('');
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -48,7 +66,6 @@ const CreatePost = () => {
 
   const handleMarkdownChange = (e) => {
     setMarkdownContent(e.target.value);
-    setContent(e.target.value);
   };
 
   const copyToClipboard = (text) => {
@@ -88,6 +105,20 @@ const CreatePost = () => {
               onChange={(e) => setTitle(e.target.value)}
               required
             />
+            <label htmlFor="category">カテゴリ</label>
+            <select
+              id="category"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              required
+            >
+              <option value="">カテゴリを選択</option>
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
             <label htmlFor="content">内容</label>
             <textarea
               id="content"
@@ -119,7 +150,7 @@ const CreatePost = () => {
           <li><strong>画像:</strong> <code onClick={() => copyToClipboard('![代替テキスト](画像のURL)')}>![代替テキスト](画像のURL)</code></li>
           <li><strong>インラインコード:</strong> <code onClick={() => copyToClipboard('`コード`')}>`コード`</code></li>
           <li><strong>コードブロック:</strong></li>
-          <pre onClick={() => copyToClipboard("```ChatGPT\nコードブロック\n```")}><code>```ChatGPT<br></br>コードブロック<br></br>```</code></pre>
+          <pre onClick={() => copyToClipboard("```ChatGPT\nコードブロック\n```")}><code>```ChatGPT<br />コードブロック<br />```</code></pre>
         </ul>
       </div>
     </div>
