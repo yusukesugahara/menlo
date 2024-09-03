@@ -11,7 +11,6 @@ const initializeCategories = async () => {
   try {
     // カテゴリが存在しない場合のみデータを挿入
     const existingCategories = await Category.find();
-    console.log(existingCategories)
     if (existingCategories.length === 0) {
       await Category.insertMany(categories);
       console.log('Categories initialized.');
