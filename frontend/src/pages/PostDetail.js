@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -61,6 +62,7 @@ const PostDetail = () => {
             {post.content}
           </ReactMarkdown>
         </div>
+        <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
       </div>
     </div>
   );
