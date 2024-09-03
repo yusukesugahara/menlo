@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './CreatePost.css';
+import apiUrl from '../config'; 
 
 const customStyle = {
   ...dark,
@@ -33,7 +34,7 @@ const CreatePost = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/categories');
+        const response = await axios.get(`${apiUrl}/api/categories`);
         if (response.data && response.data.length > 0) {
           setCategories(response.data);
         } else {
@@ -50,7 +51,7 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/posts', {
+      const response = await axios.post(`${apiUrl}/api/posts`, {
         title,
         content: markdownContent,
         category: selectedCategory,
