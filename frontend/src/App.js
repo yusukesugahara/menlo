@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
 import CategoryPage from './pages/CategoryPage';
+import EditPost from './pages/EditPost'; 
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/create" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} /> 
+        <Route path="/edit/:id" element={<EditPost />} /> 
       </Routes>
     </Router>
   );

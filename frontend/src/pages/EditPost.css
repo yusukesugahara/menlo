@@ -1,0 +1,215 @@
+/* 全体のコンテナスタイル */
+.edit-post-container {
+  max-width: 1200px; 
+  margin: 0 auto; 
+  padding: 2rem;
+  background-color: #f7fafc;
+  border-radius: 0.375rem; 
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); 
+  position: relative;
+}
+
+/* ホームに戻るボタン */
+.home-button {
+  position: absolute; 
+  top: 1rem;
+  right: 1rem;
+  background-color: #4299e1;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.home-button:hover {
+  background-color: #3182ce; 
+}
+
+/* タイトルスタイル */
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* フォームグループスタイル */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  color: #2d3748;
+  background-color: #fff;
+}
+
+/* テキストエリアの高さとリサイズ */
+.form-group textarea {
+  height: 400px;
+  resize: vertical;
+}
+
+/* ボタンスタイル */
+.button {
+  background-color: #4299e1;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #3182ce; 
+}
+
+/* コンテンツとプレビューエリアの並び */
+.content-preview {
+  display: flex;
+  gap: 2rem;
+}
+
+.content-area {
+  flex: 1;
+}
+
+.preview {
+  flex: 1;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.preview h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* マークダウンチュートリアルのスタイル */
+.markdown-tutorial {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.markdown-tutorial h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.markdown-tutorial ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.markdown-tutorial li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-tutorial code {
+  background-color: #edf2f7;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.375rem;
+  cursor: pointer; 
+  transition: background-color 0.3s;
+}
+
+.markdown-tutorial code:hover {
+  background-color: #e2e8f0; 
+}
+
+/* コードブロックのスタイル */
+.code-block {
+  position: relative;
+  background-color: #000000; 
+  color: #ffffff; 
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow: auto;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem; 
+  right: 0.5rem; 
+  background-color: #4299e1;
+  color: #fff;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.copy-button:hover {
+  background-color: #3182ce;
+}
+
+/* Syntax Highlighter のスタイル */
+.syntax-highlighter {
+  color: #ffffff !important; 
+  background: #000000 !important; 
+  text-shadow: none !important; 
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+  font-size: 1em !important;
+  text-align: left !important;
+  white-space: pre !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  line-height: 1.5 !important;
+  tab-size: 4 !important;
+  hyphens: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
+.edit-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.edit-button:hover {
+  background-color: #45a049;
+}
+
+.edit-button:active {
+  background-color: #3e8e41;
+}
+
+.edit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #c8e6c9;
+}
