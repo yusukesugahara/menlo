@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import apiUrl from '../config'; 
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
@@ -11,7 +12,7 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts?category=${categoryName}`);
+        const response = await axios.get(`${apiUrl}/api/posts?category=${categoryName}`);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);

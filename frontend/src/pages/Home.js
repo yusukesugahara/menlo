@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import './Home.css';
+import apiUrl from '../config'; 
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -10,7 +11,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/posts');
+        const response = await axios.get(`${apiUrl}/api/posts`);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
