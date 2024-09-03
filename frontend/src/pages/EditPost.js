@@ -76,6 +76,16 @@ const EditPost = () => {
       console.error('Error updating post:', error);
     }
   };
+  const onDelete = () => {
+    axios.delete(`${apiUrl}/api/posts/${id}`)
+      .then(res => {
+        console.log('Post deleted:', res.data);
+        navigate('/');
+      })
+      .catch(error => {
+        console.error('Error deleting post:', error);
+      });
+  }
 
   const handleMarkdownChange = (e) => {
     setMarkdownContent(e.target.value);
@@ -146,7 +156,8 @@ const EditPost = () => {
             <ReactMarkdown components={components}>{markdownContent}</ReactMarkdown>
           </div>
         </div>
-        <button type="submit" className="button">更新する</button>
+        <button type="submit" className="button ">更新する</button>
+        <button onClick={onDelete} className="button" style={{ marginTop: '10px' }}>削除する</button>
       </form>
       <div className="markdown-tutorial">
         <h3>Markdownの書き方</h3>
