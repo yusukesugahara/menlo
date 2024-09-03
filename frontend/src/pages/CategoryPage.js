@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import './Home.css';
 
-const Home = () => {
+const CategoryPage = () => {
+  const { categoryName } = useParams();
   const [posts, setPosts] = useState([]);
-  
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/posts');
+        const response = await axios.get(`http://localhost:5000/api/posts?category=${categoryName}`);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -18,13 +19,13 @@ const Home = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [categoryName]);
 
   return (
     <div className="container">
       <Sidebar />
       <div className="main-content">
-        <h2 className="title">相談</h2>
+        <h2 className="title">{categoryName} の記事一覧</h2>
         <div className="grid">
           {posts.map(post => (
             <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
@@ -54,4 +55,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default CategoryPage;

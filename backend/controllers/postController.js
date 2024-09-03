@@ -1,28 +1,46 @@
 const Post = require('../models/post');
+const Category = require('../models/category');
 
 // Get all posts
 const getPosts = async (req, res) => {
+  const categoryName = req.query.category;
+
   try {
-    const posts = await Post.find();
+    let posts;
+    if (categoryName) {
+      const category = await Category.findOne({ name: categoryName });
+      if (category) {
+        posts = await Post.find({ category: category._id }).populate('category');
+      } else {
+        posts = [];
+      }
+    } else {
+      posts = await Post.find().populate('category');
+    }
     res.json(posts);
   } catch (err) {
+    console.error('Error creating post:', err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
 // Create a new post
 const createPost = async (req, res) => {
-  const { title, content } = req.body;
-
+  const { title, content, category } = req.body;
+  if (!title || !content || !category) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
   try {
     const newPost = new Post({
       title,
       content,
+      category,
     });
 
     await newPost.save();
     res.status(201).json(newPost);
   } catch (err) {
+    console.error('Error creating post:', err.message); 
     res.status(500).json({ message: err.message });
   }
 };
