@@ -32,9 +32,9 @@ const EditPost = () => {
   const [markdownContent, setMarkdownContent] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-
+  const [error, setError] = useState('');
+  
   useEffect(() => {
-    // カテゴリの取得
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/categories`);
@@ -46,7 +46,6 @@ const EditPost = () => {
 
     fetchCategories();
 
-    // 投稿データの取得
     const fetchPost = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/posts/${id}`);
@@ -56,6 +55,7 @@ const EditPost = () => {
         setSelectedCategory(post.category); 
       } catch (error) {
         console.error('Error fetching post:', error);
+        setError('Post not found or you do not have permission to edit this post.');
       }
     };
 
@@ -64,28 +64,48 @@ const EditPost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to edit the post.');
+      return;
+    }
     try {
       const response = await axios.put(`${apiUrl}/api/posts/${id}`, {
         title,
         content: markdownContent,
         category: selectedCategory,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`  // JWTトークンをヘッダーに追加
+        }
       });
       console.log('Post updated:', response.data);
       navigate(`/post/${id}`);
     } catch (error) {
       console.error('Error updating post:', error);
+      setError('Error updating post. You may not have permission.');
     }
   };
-  const onDelete = () => {
-    axios.delete(`${apiUrl}/api/posts/${id}`)
-      .then(res => {
-        console.log('Post deleted:', res.data);
-        navigate('/');
-      })
-      .catch(error => {
-        console.error('Error deleting post:', error);
+
+  const onDelete = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to delete the post.');
+      return;
+    }
+    try {
+      await axios.delete(`${apiUrl}/api/posts/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`  // JWTトークンをヘッダーに追加
+        }
       });
-  }
+      console.log('Post deleted');
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setError('Error deleting post. You may not have permission.');
+    }
+  };
 
   const handleMarkdownChange = (e) => {
     setMarkdownContent(e.target.value);
@@ -112,7 +132,7 @@ const EditPost = () => {
       );
     }
   };
-
+  
   return (
     <div className="edit-post-container">
       <Link to="/" className="home-button">Homeに戻る</Link>
