@@ -5,6 +5,9 @@ import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
 import CategoryPage from './pages/CategoryPage';
 import EditPost from './pages/EditPost'; 
+import Login from './pages/Login'; 
+import SignUp from './pages/SignUp'; 
+
 
 function App() {
   return (
@@ -15,6 +18,8 @@ function App() {
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} /> 
         <Route path="/edit/:id" element={<EditPost />} /> 
+        <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<SignUp />} />
       </Routes>
     </Router>
   );

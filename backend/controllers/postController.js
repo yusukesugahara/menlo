@@ -27,6 +27,7 @@ const getPosts = async (req, res) => {
 // Create a new post
 const createPost = async (req, res) => {
   const { title, content, category } = req.body;
+
   if (!title || !content || !category) {
     return res.status(400).json({ message: "All fields are required." });
   }
@@ -35,6 +36,7 @@ const createPost = async (req, res) => {
       title,
       content,
       category,
+      author: req.userId,  // 認証されたユーザーのIDを保存
     });
 
     await newPost.save();
@@ -65,9 +67,14 @@ const updatePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    post.title = req.body.title;
-    post.content = req.body.content;
-    post.category = req.body.category;
+    // 投稿者かどうかを確認
+    if (post.author.toString() !== req.userId) {
+      return res.status(403).json({ message: 'You do not have permission to edit this post.' });
+    }
+
+    post.title = req.body.title || post.title;
+    post.content = req.body.content || post.content;
+    post.category = req.body.category || post.category;
 
     const updatedPost = await post.save();
     res.json(updatedPost);
@@ -77,9 +84,21 @@ const updatePost = async (req, res) => {
 };
 
 const deletePost = async (req, res) =>{
+
   try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // 投稿者かどうかを確認
+    if (post.author.toString() !== req.userId) {
+      return res.status(403).json({ message: 'You do not have permission to delete this post.' });
+    }
+
     await Post.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Post deleted.' });
+    console.log('Post deleted successfully');
+    res.json({ message: 'Post deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

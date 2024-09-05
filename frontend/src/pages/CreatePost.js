@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './CreatePost.css';
 import apiUrl from '../config'; 
+import api from '../utils/api';
 
 const customStyle = {
   ...dark,
@@ -30,47 +31,81 @@ const CreatePost = () => {
   const [markdownContent, setMarkdownContent] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
+  // カテゴリデータを取得
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      if (!token) {
+        setError('You must be logged in to create a post.');
+        navigate('/login');  // ログイン画面に遷移
+      }
+    }
+    
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/categories`);
-        if (response.data && response.data.length > 0) {
-          setCategories(response.data);
-        } else {
-          console.error('No categories found');
-        }
+        setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
-  
+
     fetchCategories();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to create a post.');
+      navigate('/login');  // ログイン画面に遷移
+    }
+
     try {
       const response = await axios.post(`${apiUrl}/api/posts`, {
         title,
         content: markdownContent,
         category: selectedCategory,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
+      
       console.log('Post created:', response.data);
       setTitle('');
       setMarkdownContent('');
       setSelectedCategory('');
+      setError('');
+      navigate('/');
     } catch (error) {
       console.error('Error creating post:', error);
+      setError('Error creating post. Please try again.');
+      if (error.response && error.response.status === 401) {
+        setError('Token expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');  // ログイン画面にリダイレクト
+      }
     }
   };
 
-  const handleMarkdownChange = (e) => {
-    setMarkdownContent(e.target.value);
+  // クリップボードにコピー
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        console.log('Text copied to clipboard');
+      })
+      .catch(err => {
+        console.error('Failed to copy text:', err);
+      });
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+  // Markdownの変更イベント
+  const handleMarkdownChange = (e) => {
+    setMarkdownContent(e.target.value);
   };
 
   const components = {
@@ -91,11 +126,13 @@ const CreatePost = () => {
     }
   };
 
+
   return (
     <div className="create-post-container">
       <Link to="/" className="home-button">Homeに戻る</Link>
       <h2 className="title">新しい記事を投稿する</h2>
       <form onSubmit={handleSubmit}>
+      
         <div className="content-preview">
           <div className="form-group content-area">
             <label htmlFor="title">タイトル</label>
@@ -136,6 +173,7 @@ const CreatePost = () => {
         </div>
         <button type="submit" className="button">投稿する</button>
       </form>
+      {error && <p className="error-message">{error}</p>}
       <div className="markdown-tutorial">
         <h3>Markdownの書き方</h3>
         <ul>
