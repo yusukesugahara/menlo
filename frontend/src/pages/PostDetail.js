@@ -31,12 +31,27 @@ const customStyle = {
 const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);  
 
   useEffect(() => {
     const fetchPost = async () => {
+      const token = localStorage.getItem('token'); 
       try {
-        const response = await axios.get(`${apiUrl}/api/posts/${id}`);
-        setPost(response.data);
+        const response = await axios.get(`${apiUrl}/api/posts/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // トークンを付与
+          }
+        });
+        const postData = response.data;
+        setPost(postData);
+
+        // ログインしているユーザーのIDを取得
+        const loggedInUserId = localStorage.getItem('userId');  // ログイン時に保存されているユーザーIDを取得
+        // 投稿者のIDとログインしているユーザーのIDが一致するか確認
+        if (postData.author === loggedInUserId) {
+          setIsOwner(true);  // 投稿者であればtrue
+        }
+
       } catch (error) {
         console.error('Error fetching post:', error);
       }
@@ -55,17 +70,21 @@ const PostDetail = () => {
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
-          <h1 className="post-title">{post.title}</h1>
-          <div className="post-content">
-            <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
-              <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
-                {children}
-              </SyntaxHighlighter>
-            ) }}>
-              {post.content}
-            </ReactMarkdown>
+          <div className='main-content-inner'>
+            <h1 className="post-title">{post.title}</h1>
+            <div className="post-content">
+              <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
+                <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
+                  {children}
+                </SyntaxHighlighter>
+              ) }}>
+                {post.content}
+              </ReactMarkdown>
+            </div>
+            {isOwner && (
+              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
+            )}
           </div>
-          <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
         </div>
       </div>
     </div>

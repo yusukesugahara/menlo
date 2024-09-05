@@ -7,7 +7,7 @@ import CategoryPage from './pages/CategoryPage';
 import EditPost from './pages/EditPost'; 
 import Login from './pages/Login'; 
 import SignUp from './pages/SignUp'; 
-
+import UserPage from './pages/UserPage';
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route path="/edit/:id" element={<EditPost />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/user-page" element={<UserPage />} />
       </Routes>
     </Router>
   );

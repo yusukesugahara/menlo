@@ -9,6 +9,7 @@ const Header = () => {
   const handleLogout = () => {
     // ローカルストレージからトークンを削除
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
 
     // ログイン画面にリダイレクト
     navigate('/login');
@@ -16,12 +17,15 @@ const Header = () => {
 
   return (
     <header>
-      <h1>My Application</h1>
+      <h1>Menlo</h1>
       <nav className='header-nav'>
         {/* ログインしているかどうかでボタンを切り替える */}
         {token ? (
           // ログインしている場合
           <>
+            <Link to="/user-page" className="link-no-underline">
+              <button className='header-button'>UserPage</button>
+            </Link>
             <button onClick={handleLogout} className='header-button'>Logout</button>
           </>
         ) : (

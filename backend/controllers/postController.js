@@ -10,12 +10,16 @@ const getPosts = async (req, res) => {
     if (categoryName) {
       const category = await Category.findOne({ name: categoryName });
       if (category) {
-        posts = await Post.find({ category: category._id }).populate('category');
+        posts = await Post.find({ category: category._id })
+                            .populate('category')
+                            .populate('author', 'username');
       } else {
         posts = [];
       }
     } else {
-      posts = await Post.find().populate('category');
+      posts = await Post.find()
+                        .populate('category')
+                        .populate('author', 'username');
     }
     res.json(posts);
   } catch (err) {
@@ -104,10 +108,22 @@ const deletePost = async (req, res) =>{
   }
 }
 
+// ユーザーの投稿一覧を取得
+const getUserPosts = async (req, res) => {
+  try {
+    const userId = req.userId;  // authMiddlewareによって付与されるuserId
+    const posts = await Post.find({ author: userId }).populate('category');  // ユーザーIDに基づいて投稿を検索
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   getPosts,
   createPost,
   getPostById,
   updatePost,
   deletePost,
+  getUserPosts,
 };

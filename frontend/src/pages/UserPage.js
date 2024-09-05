@@ -1,26 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api';  // カスタムaxiosインスタンス
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import './Home.css';
 import apiUrl from '../config'; 
 
-const Home = () => {
+const UserPosts = () => {
   const [posts, setPosts] = useState([]);
-  
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchPosts = async () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      navigate('/login');  // ログインしていない場合はログイン画面へ
+      return;
+    }
+
+    const fetchUserPosts = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/posts`);
+        const response = await api.get(`${apiUrl}/api/user-page`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         setPosts(response.data);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching user posts:', error);
+        setError('Failed to load posts. Please try again.');
+        if (error.response && error.response.status === 401) {
+          setError('Token expired. Please log in again.');
+          localStorage.removeItem('token');
+          navigate('/login');  // ログイン画面にリダイレクト
+        }
       }
     };
 
-    fetchPosts();
-  }, []);
+    fetchUserPosts();
+  }, [navigate]);
 
   return (
     <div className="container">
@@ -28,15 +46,13 @@ const Home = () => {
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
-          <h2 className="title">投稿一覧</h2>
+          {error && <p>{error}</p>}
+          <h2 className="title">My投稿一覧</h2>
           <div className="grid">
             {posts.map(post => (
-              
+              <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
                 <div className="card">
-                  <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
-                    <p className="card-title">{post.title}</p>
-                  </Link>
-                  <p className="card-author-name">{post.author.username}</p>
+                  <p className="card-title">{post.title}</p>
                   <div className='card-info'>
                     <p className="card-info-text">
                       {/* カテゴリが存在する場合のみ表示 */}
@@ -53,6 +69,7 @@ const Home = () => {
                     <span>1</span>
                   </div>
                 </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -61,4 +78,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default UserPosts;

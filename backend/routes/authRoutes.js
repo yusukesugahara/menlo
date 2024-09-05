@@ -74,8 +74,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
-
-    res.json({ token });
+    res.json({ token, userId: user._id});
   } catch (err) {
     console.error('ログインエラー:', err);
     res.status(500).json({ message: 'ログインに失敗しました。' });
