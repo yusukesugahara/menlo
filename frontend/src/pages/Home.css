@@ -36,11 +36,10 @@
   overflow-y: auto;
 }
 
-.title {
+.main-content .title {
   font-size: 1.25rem; 
   font-weight: bold;
   margin-bottom: 1rem; 
-  border-bottom: 2px solid #e2e8f0; 
   padding-bottom: 0.5rem; 
 }
 
@@ -79,10 +78,6 @@
   transition: transform 0.2s, box-shadow 0.2s; /* アニメーションの追加 */
 }
 
-.card:hover {
-  transform: translateY(-10px); /* 浮き上がる効果 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ボックスシャドウを追加 */
-}
 
 .card-title {
   margin: 0px;
@@ -105,8 +100,12 @@
   background-color: #4a5568;
 }
 
+.card-author-name{
+  margin: 0;
+}
+
 .card-info-text {
-  margin: 0 0 0 10px;
+  margin: 0 10px 0 0;
   color: #2d3748;
   font-size: 0.85rem;
   margin-bottom: 0.5rem; 

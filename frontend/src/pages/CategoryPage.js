@@ -31,17 +31,18 @@ const CategoryPage = () => {
         <div className="main-content">
           <h2 className="title">{categoryName} の記事一覧</h2>
           <div className="grid">
-            {posts.map(post => (
+          {posts.map(post => (
               <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
                 <div className="card">
                   <p className="card-title">{post.title}</p>
+                  <p className="card-author-name">{post.author.username}</p>
                   <div className='card-info'>
                     <p className="card-info-text">
                       {/* カテゴリが存在する場合のみ表示 */}
-                      カテゴリ: {post.category ? post.category.name : 'カテゴリなし'}
+                      {post.category ? post.category.name : 'カテゴリなし'}
                     </p>
                     <p className="card-info-text">
-                      作成日: {new Date(post.createdAt).toLocaleString()}
+                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
                     </p>
                   </div>                
                   <div className="button-container">

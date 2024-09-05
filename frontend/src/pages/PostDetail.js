@@ -70,20 +70,22 @@ const PostDetail = () => {
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
-          <h1 className="post-title">{post.title}</h1>
-          <div className="post-content">
-            <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
-              <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
-                {children}
-              </SyntaxHighlighter>
-            ) }}>
-              {post.content}
-            </ReactMarkdown>
-          </div>
-          {isOwner && (
-            <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
-          )}
+          <div className='main-content-inner'>
+            <h1 className="post-title">{post.title}</h1>
+            <div className="post-content">
+              <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
+                <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
+                  {children}
+                </SyntaxHighlighter>
+              ) }}>
+                {post.content}
+              </ReactMarkdown>
             </div>
+            {isOwner && (
+              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

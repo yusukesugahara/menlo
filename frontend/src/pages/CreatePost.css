@@ -187,3 +187,20 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+
+.preview h1{
+  margin: 0;
+  font-weight: 600;
+}
+
+.preview h2{
+  text-align: left;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 500;
+}
+
+.preview h3{
+  font-weight: 500;
+}

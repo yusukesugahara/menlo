@@ -56,10 +56,10 @@ const UserPosts = () => {
                   <div className='card-info'>
                     <p className="card-info-text">
                       {/* カテゴリが存在する場合のみ表示 */}
-                      カテゴリ: {post.category ? post.category.name : 'カテゴリなし'}
+                      {post.category ? post.category.name : 'カテゴリなし'}
                     </p>
                     <p className="card-info-text">
-                      作成日: {new Date(post.createdAt).toLocaleString()}
+                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
                     </p>
                   </div>                
                   <div className="button-container">

@@ -31,16 +31,19 @@ const Home = () => {
           <h2 className="title">投稿一覧</h2>
           <div className="grid">
             {posts.map(post => (
-              <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
+              
                 <div className="card">
-                  <p className="card-title">{post.title}</p>
+                  <Link to={`/post/${post._id}`} className="card-link" key={post._id}>
+                    <p className="card-title">{post.title}</p>
+                  </Link>
+                  <p className="card-author-name">{post.author.username}</p>
                   <div className='card-info'>
                     <p className="card-info-text">
                       {/* カテゴリが存在する場合のみ表示 */}
-                      カテゴリ: {post.category ? post.category.name : 'カテゴリなし'}
+                      {post.category ? post.category.name : 'カテゴリなし'}
                     </p>
                     <p className="card-info-text">
-                      作成日: {new Date(post.createdAt).toLocaleString()}
+                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
                     </p>
                   </div>                
                   <div className="button-container">
@@ -50,7 +53,6 @@ const Home = () => {
                     <span>1</span>
                   </div>
                 </div>
-              </Link>
             ))}
           </div>
         </div>
