@@ -13,6 +13,11 @@ const authMiddleware = (req, res, next) => {
     req.userId = decoded.userId;
     next();
   } catch (err) {
+    if (err.name === 'TokenExpiredError') {  // トークンの有効期限が切れている場合
+      console.error('JWT expired:', err.expiredAt);  // 期限が切れた時刻をログに表示
+      return res.status(401).json({ message: 'Token expired' });
+    }
+
     console.error('JWT verification failed:', err);  // JWTの検証エラーをログに出力
     return res.status(401).json({ message: 'Invalid or expired token' });
   }

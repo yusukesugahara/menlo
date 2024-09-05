@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './CreatePost.css';
 import apiUrl from '../config'; 
+import api from '../utils/api';
 
 const customStyle = {
   ...dark,
@@ -31,9 +32,18 @@ const CreatePost = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // カテゴリデータを取得
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      if (!token) {
+        setError('You must be logged in to create a post.');
+        navigate('/login');  // ログイン画面に遷移
+      }
+    }
+    
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/categories`);
@@ -51,7 +61,7 @@ const CreatePost = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       setError('You must be logged in to create a post.');
-      return;
+      navigate('/login');  // ログイン画面に遷移
     }
 
     try {
@@ -70,9 +80,15 @@ const CreatePost = () => {
       setMarkdownContent('');
       setSelectedCategory('');
       setError('');
+      navigate('/');
     } catch (error) {
       console.error('Error creating post:', error);
       setError('Error creating post. Please try again.');
+      if (error.response && error.response.status === 401) {
+        setError('Token expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');  // ログイン画面にリダイレクト
+      }
     }
   };
 

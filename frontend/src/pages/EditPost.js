@@ -66,8 +66,10 @@ const EditPost = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('You must be logged in to edit the post.');
-      return;
+      if (!token) {
+        setError('You must be logged in to create a post.');
+        navigate('/login');  // ログイン画面に遷移
+      }
     }
     try {
       const response = await axios.put(`${apiUrl}/api/posts/${id}`, {
@@ -90,8 +92,8 @@ const EditPost = () => {
   const onDelete = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('You must be logged in to delete the post.');
-      return;
+      setError('You must be logged in to create a post.');
+      navigate('/login');  // ログイン画面に遷移
     }
     try {
       await axios.delete(`${apiUrl}/api/posts/${id}`, {
@@ -103,7 +105,12 @@ const EditPost = () => {
       navigate('/');
     } catch (error) {
       console.error('Error deleting post:', error);
-      setError('Error deleting post. You may not have permission.');
+      setError('Error deleting post. You may not have permission.')
+      if (error.response && error.response.status === 401) {
+        setError('Token expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');  // ログイン画面にリダイレクト
+      }
     }
   };
 

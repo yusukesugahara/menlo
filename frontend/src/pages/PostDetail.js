@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import './PostDetail.css';
 import apiUrl from '../config'; 
@@ -50,19 +51,22 @@ const PostDetail = () => {
 
   return (
     <div className="container">
-      <Sidebar />
-      <div className="main-content">
-        <h1 className="post-title">{post.title}</h1>
-        <div className="post-content">
-          <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
-            <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
-              {children}
-            </SyntaxHighlighter>
-          ) }}>
-            {post.content}
-          </ReactMarkdown>
+      <Header />
+      <div className='content-wrapper'>
+        <Sidebar />
+        <div className="main-content">
+          <h1 className="post-title">{post.title}</h1>
+          <div className="post-content">
+            <ReactMarkdown components={{ code: ({node, inline, className, children, ...props}) => (
+              <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
+                {children}
+              </SyntaxHighlighter>
+            ) }}>
+              {post.content}
+            </ReactMarkdown>
+          </div>
+          <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
         </div>
-        <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
       </div>
     </div>
   );
