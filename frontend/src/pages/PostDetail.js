@@ -31,12 +31,27 @@ const customStyle = {
 const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);  
 
   useEffect(() => {
     const fetchPost = async () => {
+      const token = localStorage.getItem('token'); 
       try {
-        const response = await axios.get(`${apiUrl}/api/posts/${id}`);
-        setPost(response.data);
+        const response = await axios.get(`${apiUrl}/api/posts/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`  // トークンを付与
+          }
+        });
+        const postData = response.data;
+        setPost(postData);
+
+        // ログインしているユーザーのIDを取得
+        const loggedInUserId = localStorage.getItem('userId');  // ログイン時に保存されているユーザーIDを取得
+        // 投稿者のIDとログインしているユーザーのIDが一致するか確認
+        if (postData.author === loggedInUserId) {
+          setIsOwner(true);  // 投稿者であればtrue
+        }
+
       } catch (error) {
         console.error('Error fetching post:', error);
       }
@@ -65,8 +80,10 @@ const PostDetail = () => {
               {post.content}
             </ReactMarkdown>
           </div>
-          <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
-        </div>
+          {isOwner && (
+            <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
+          )}
+            </div>
       </div>
     </div>
   );
