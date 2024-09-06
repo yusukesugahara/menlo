@@ -32,6 +32,8 @@ const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [isOwner, setIsOwner] = useState(false);  
+  const [liked, setLiked] = useState(false);  // ユーザーが「いいね」したかどうか
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -42,13 +44,15 @@ const PostDetail = () => {
             'Authorization': `Bearer ${token}`  // トークンを付与
           }
         });
+        setLikesCount(response.data.likes.length);
+        const userId = localStorage.getItem('userId');  // ユーザーIDを取得
+        setLiked(response.data.likes.includes(userId)); 
+
         const postData = response.data;
         setPost(postData);
 
-        // ログインしているユーザーのIDを取得
-        const loggedInUserId = localStorage.getItem('userId');  // ログイン時に保存されているユーザーIDを取得
         // 投稿者のIDとログインしているユーザーのIDが一致するか確認
-        if (postData.author === loggedInUserId) {
+        if (postData.author === userId) {
           setIsOwner(true);  // 投稿者であればtrue
         }
 
@@ -59,6 +63,27 @@ const PostDetail = () => {
 
     fetchPost();
   }, [id]);
+
+  const handleLike = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      if (liked) {
+        const response = await axios.post(`${apiUrl}/api/posts/${id}/unlike`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setLiked(false);
+        setLikesCount(response.data.likes); // いいね数を更新
+      } else {
+        const response = await axios.post(`${apiUrl}/api/posts/${id}/like`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setLiked(true);
+        setLikesCount(response.data.likes); // いいね数を更新
+      }
+    } catch (error) {
+      console.error('Error updating like status', error);
+    }
+  };
 
   if (!post) {
     return <div>Loading...</div>;
@@ -81,8 +106,10 @@ const PostDetail = () => {
                 {post.content}
               </ReactMarkdown>
             </div>
+            <button className={liked ? 'like-button liked' : 'like-button not-liked'}  onClick={handleLike} >Like</button>
+            <span>&nbsp;{likesCount}</span>&nbsp;<br/><br/>
             {isOwner && (
-              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" style={{ marginLeft: '10px' }}>Edit</Link>
+              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" >Edit</Link>
             )}
           </div>
         </div>
