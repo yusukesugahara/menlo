@@ -84,7 +84,9 @@ const CategoryPage = () => {
                   <Link to={`/post/${post._id}`} className="card-link">
                     <p className="card-title">{post.title}</p>
                   </Link>
-                  <p className="card-author-name">{post.author.username}</p>
+                  <Link to={`/author/${post.author._id}`} className="card-link">
+                    <p className="card-author-name">{post.author.username}</p>
+                  </Link>
                   <div className='card-info'>
                     <p className="card-info-text">
                       {post.category ? post.category.name : 'カテゴリなし'}
