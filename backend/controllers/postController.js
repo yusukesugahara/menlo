@@ -176,6 +176,22 @@ const unlikePost = async (req, res) => {
   }
 };
 
+const getPostsByAuthor = async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.params.authorId })
+                                  .populate('author')
+                                  .populate('category');
+    const postWithLikeCount = posts.map(post => ({
+      ...post._doc,
+      likesCount: post.likes.length, 
+    }));
+
+    res.json(postWithLikeCount);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 module.exports = {
   getPosts,
@@ -186,4 +202,5 @@ module.exports = {
   getUserPosts,
   likePost,
   unlikePost,
+  getPostsByAuthor,
 };

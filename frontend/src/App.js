@@ -8,6 +8,7 @@ import EditPost from './pages/EditPost';
 import Login from './pages/Login'; 
 import SignUp from './pages/SignUp'; 
 import UserPage from './pages/UserPage';
+import AuthorPosts from './pages/AuthorPosts'; 
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/user-page" element={<UserPage />} />
+        <Route path="/author/:authorId" element={<AuthorPosts />} />
       </Routes>
     </Router>
   );
