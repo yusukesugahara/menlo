@@ -1,5 +1,6 @@
 ChatGPTのプロンプト投稿サイトです。  
-  
+
+サイトのURLはこちら  
 https://menlo.vercel.app/  
   
 https://www.figma.com/proto/LVNps7EamXw9c1bCRMjboZ/Untitled?node-id=0-1&t=YgUxHmlj4dBcc1Yp-1  
