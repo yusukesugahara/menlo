@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import PostCard from '../components/PostCard';
 import apiUrl from '../config'; 
 
 const UserPosts = () => {
@@ -54,7 +55,6 @@ const UserPosts = () => {
     fetchUserPosts();
   }, [navigate]);
 
-
   const handleLike = async (postId, liked) => {
     const token = localStorage.getItem('token');
   
@@ -89,7 +89,6 @@ const UserPosts = () => {
     }
   };
 
-
   return (
     <div className="container">
       <Header />
@@ -97,30 +96,16 @@ const UserPosts = () => {
         <Sidebar />
         <div className="main-content">
           {error && <p>{error}</p>}
-          <h2 className="title">My投稿一覧</h2>
+          <h2 className="title">My 投稿一覧</h2>
           <div className="grid">
-          {posts.map(post => (
-                <div className="card" key={post._id}>
-                  <Link to={`/post/${post._id}`} className="card-link">
-                    <p className="card-title">{post.title}</p>
-                  </Link>
-                  <div className='card-info'>
-                    <p className="card-info-text">
-                      {post.category ? post.category.name : 'カテゴリなし'}
-                    </p>
-                    <p className="card-info-text">
-                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-                    </p>
-                  </div>                
-                  <div className="button-container">
-                    <button 
-                      onClick={() => handleLike(post._id, likedPosts[post._id])}
-                      className={likedPosts[post._id] ? 'like-button liked' : 'like-button not-liked'}
-                    >Like
-                    </button>
-                    <span>&nbsp;{likeCounts[post._id]}</span>&nbsp; 
-                  </div>
-                </div>
+            {posts.map(post => (
+              <PostCard
+              key={post._id}
+              post={post}
+              likedPosts={likedPosts}
+              handleLike={handleLike}
+              likeCounts={likeCounts}
+            />
             ))}
           </div>
         </div>
