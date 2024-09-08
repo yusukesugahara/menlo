@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import DeleteButton from '../components/DeleteButton';
 import './EditPost.css';
 import apiUrl from '../config'; 
 
@@ -33,6 +34,7 @@ const EditPost = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [error, setError] = useState('');
+  const [isOwner, setIsOwner] = useState(false);  
   
   useEffect(() => {
     const fetchCategories = async () => {
@@ -53,6 +55,11 @@ const EditPost = () => {
         setTitle(post.title);
         setMarkdownContent(post.content);
         setSelectedCategory(post.category); 
+
+        const userId = localStorage.getItem('userId'); 
+        if (post.author === userId) {
+          setIsOwner(true); 
+        }
       } catch (error) {
         console.error('Error fetching post:', error);
         setError('Post not found or you do not have permission to edit this post.');
@@ -86,31 +93,6 @@ const EditPost = () => {
     } catch (error) {
       console.error('Error updating post:', error);
       setError('Error updating post. You may not have permission.');
-    }
-  };
-
-  const onDelete = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('You must be logged in to create a post.');
-      navigate('/login');  // ログイン画面に遷移
-    }
-    try {
-      await axios.delete(`${apiUrl}/api/posts/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`  // JWTトークンをヘッダーに追加
-        }
-      });
-      console.log('Post deleted');
-      navigate('/');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      setError('Error deleting post. You may not have permission.')
-      if (error.response && error.response.status === 401) {
-        setError('Token expired. Please log in again.');
-        localStorage.removeItem('token');
-        navigate('/login');  // ログイン画面にリダイレクト
-      }
     }
   };
 
@@ -183,9 +165,12 @@ const EditPost = () => {
             <ReactMarkdown components={components}>{markdownContent}</ReactMarkdown>
           </div>
         </div>
-        <button type="submit" className="button ">更新する</button>
-        <button onClick={onDelete} className="button" style={{ marginTop: '10px' }}>削除する</button>
+        <button type="submit" className="btn">更新する</button>
       </form>
+      <DeleteButton
+        postId={id}
+        isOwner = {isOwner}
+        />
       <div className="markdown-tutorial">
         <h3>Markdownの書き方</h3>
         <ul>

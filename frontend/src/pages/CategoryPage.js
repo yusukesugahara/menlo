@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar';
+import PostCard from '../components/PostCard';
 import apiUrl from '../config'; 
 
 const CategoryPage = () => {
@@ -80,30 +80,13 @@ const CategoryPage = () => {
           <h2 className="title">{categoryName} の記事一覧</h2>
           <div className="grid">
           {posts.map(post => (
-                <div className="card" key={post._id}>
-                  <Link to={`/post/${post._id}`} className="card-link">
-                    <p className="card-title">{post.title}</p>
-                  </Link>
-                  <Link to={`/author/${post.author._id}`} className="card-link">
-                    <p className="card-author-name">{post.author.username}</p>
-                  </Link>
-                  <div className='card-info'>
-                    <p className="card-info-text">
-                      {post.category ? post.category.name : 'カテゴリなし'}
-                    </p>
-                    <p className="card-info-text">
-                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-                    </p>
-                  </div>                
-                  <div className="button-container">
-                    <button 
-                      onClick={() => handleLike(post._id, likedPosts[post._id])}
-                      className={likedPosts[post._id] ? 'like-button liked' : 'like-button not-liked'}
-                    >Like
-                    </button>
-                    <span>&nbsp;{likeCounts[post._id]}</span>&nbsp; 
-                  </div>
-                </div>
+              <PostCard
+              key={post._id}
+              post={post}
+              likedPosts={likedPosts}
+              handleLike={handleLike}
+              likeCounts={likeCounts}
+            />
             ))}
           </div>
         </div>

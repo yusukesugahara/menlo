@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import PostCard from '../components/PostCard';
 import './Home.css';
 import apiUrl from '../config'; 
 
@@ -49,7 +50,7 @@ const Home = () => {
         }));
         setLikeCounts(prevCounts => ({
           ...prevCounts,
-          [postId]: prevCounts[postId] - 1 // いいね数を減らす
+          [postId]: prevCounts[postId] - 1
         }));
       } else {
         await axios.post(`${apiUrl}/api/posts/${postId}/like`, {}, {
@@ -61,7 +62,7 @@ const Home = () => {
         }));
         setLikeCounts(prevCounts => ({
           ...prevCounts,
-          [postId]: prevCounts[postId] + 1 // いいね数を増やす
+          [postId]: prevCounts[postId] + 1 
         }));
       }
     } catch (error) {
@@ -78,31 +79,13 @@ const Home = () => {
           <h2 className="title">投稿一覧</h2>
           <div className="grid">
             {posts.map(post => (
-                <div className="card" key={post._id}>
-                  <Link to={`/post/${post._id}`} className="card-link">
-                    <p className="card-title">{post.title}</p>
-                  </Link>
-                  <Link to={`/author/${post.author._id}`} className="card-link">
-                    <p className="card-author-name">{post.author.username}</p>
-                  </Link>
-                  
-                  <div className='card-info'>
-                    <p className="card-info-text">
-                      {post.category ? post.category.name : 'カテゴリなし'}
-                    </p>
-                    <p className="card-info-text">
-                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-                    </p>
-                  </div>                
-                  <div className="button-container">
-                    <button 
-                      onClick={() => handleLike(post._id, likedPosts[post._id])}
-                      className={likedPosts[post._id] ? 'like-button liked' : 'like-button not-liked'}
-                    >Like
-                    </button>
-                    <span>&nbsp;{likeCounts[post._id]}</span>&nbsp; {/* いいね数を表示 */}
-                  </div>
-                </div>
+              <PostCard
+              key={post._id}
+              post={post}
+              likedPosts={likedPosts}
+              handleLike={handleLike}
+              likeCounts={likeCounts}
+            />
             ))}
           </div>
         </div>

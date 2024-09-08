@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, Link  } from 'react-router-dom';
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar';
+import PostCard from '../components/PostCard';
 import apiUrl from '../config';
 
 const AuthorPosts = () => {
@@ -86,28 +87,13 @@ const AuthorPosts = () => {
           <h2 className="title">{authorName} の記事一覧</h2>
           <div className="grid">
           {posts.map(post => (
-                <div className="card" key={post._id}>
-                  <Link to={`/post/${post._id}`} className="card-link">
-                    <p className="card-title">{post.title}</p>
-                  </Link>
-                  <p className="card-author-name">{post.author.username}</p>
-                  <div className='card-info'>
-                    <p className="card-info-text">
-                      {post.category ? post.category.name : 'カテゴリなし'}
-                    </p>
-                    <p className="card-info-text">
-                      {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-                    </p>
-                  </div>                
-                  <div className="button-container">
-                    <button 
-                      onClick={() => handleLike(post._id, likedPosts[post._id])}
-                      className={likedPosts[post._id] ? 'like-button liked' : 'like-button not-liked'}
-                    >Like
-                    </button>
-                    <span>&nbsp;{likeCounts[post._id]}</span>&nbsp; 
-                  </div>
-                </div>
+              <PostCard
+              key={post._id}
+              post={post}
+              likedPosts={likedPosts}
+              handleLike={handleLike}
+              likeCounts={likeCounts}
+            />
             ))}
           </div>
         </div>
