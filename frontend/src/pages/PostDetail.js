@@ -109,7 +109,7 @@ const PostDetail = () => {
             <button className={liked ? 'like-button liked' : 'like-button not-liked'}  onClick={handleLike} >Like</button>
             <span>&nbsp;{likesCount}</span>&nbsp;<br/><br/>
             {isOwner && (
-              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" >Edit</Link>
+              <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" >編集</Link>
             )}
             <DeleteButton
               postId={id}
