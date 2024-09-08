@@ -8,10 +8,14 @@ const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
       <Link to={`/post/${post._id}`} className="card-link">
         <p className="card-title">{post.title}</p>
       </Link>
-      <Link to={`/author/${post.author._id}`} className="card-link">
-        {post.author.username}
-      </Link>
       <div className='card-info'>
+        <p className="card-info-text">
+            {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
+          </p>
+        <Link to={`/author/${post.author._id}`} className="card-link">
+          {post.author.username}
+        </Link>
+      </div>                
         <p className="card-info-text">
           {post.category ? (
               <Link to={`/category/${post.category.name}`} className="category-link card-link">
@@ -19,10 +23,6 @@ const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
               </Link>
             ) : 'カテゴリなし'}
         </p>
-        <p className="card-info-text">
-          {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-        </p>
-      </div>                
       <div className="button-container">
         <button 
           onClick={() => handleLike(post._id, likedPosts[post._id])}
