@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import DeleteButton from '../components/DeleteButton';
 import './PostDetail.css';
 import apiUrl from '../config'; 
 
@@ -32,7 +33,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [isOwner, setIsOwner] = useState(false);  
-  const [liked, setLiked] = useState(false);  // ユーザーが「いいね」したかどうか
+  const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
@@ -41,19 +42,18 @@ const PostDetail = () => {
       try {
         const response = await axios.get(`${apiUrl}/api/posts/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`  // トークンを付与
+            'Authorization': `Bearer ${token}`
           }
         });
         setLikesCount(response.data.likes.length);
-        const userId = localStorage.getItem('userId');  // ユーザーIDを取得
+        const userId = localStorage.getItem('userId'); 
         setLiked(response.data.likes.includes(userId)); 
 
         const postData = response.data;
         setPost(postData);
 
-        // 投稿者のIDとログインしているユーザーのIDが一致するか確認
         if (postData.author === userId) {
-          setIsOwner(true);  // 投稿者であればtrue
+          setIsOwner(true); 
         }
 
       } catch (error) {
@@ -72,13 +72,13 @@ const PostDetail = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLiked(false);
-        setLikesCount(response.data.likes); // いいね数を更新
+        setLikesCount(response.data.likes);
       } else {
         const response = await axios.post(`${apiUrl}/api/posts/${id}/like`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLiked(true);
-        setLikesCount(response.data.likes); // いいね数を更新
+        setLikesCount(response.data.likes);
       }
     } catch (error) {
       console.error('Error updating like status', error);
@@ -90,7 +90,7 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="container">
+    <div className="container post-deteil">
       <Header />
       <div className='content-wrapper'>
         <Sidebar />
@@ -111,6 +111,10 @@ const PostDetail = () => {
             {isOwner && (
               <Link to={`/edit/${post._id}`} className="btn btn-primary edit-button" >Edit</Link>
             )}
+            <DeleteButton
+              postId={id}
+              isOwner = {isOwner}
+              />
           </div>
         </div>
       </div>

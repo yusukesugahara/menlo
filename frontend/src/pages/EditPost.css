@@ -189,7 +189,7 @@
 }
 
 
-.edit-button {
+.btn {
   background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
@@ -201,15 +201,14 @@
   text-decoration: none;
 }
 
-.edit-button:hover {
-  background-color: #45a049;
+.btn:hover {
+  opacity: 0.7;
 }
 
-.edit-button:active {
-  background-color: #3e8e41;
+.delete-button{
+  background-color: #ff4d4d;
 }
 
-.edit-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px #c8e6c9;
+.edit-post-container .delete-button{
+  margin: 10px 0 0 0 ;
 }
