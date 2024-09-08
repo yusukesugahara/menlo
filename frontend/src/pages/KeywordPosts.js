@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import Header from '../components/Header'
+import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import PostCard from '../components/PostCard';
-import apiUrl from '../config'; 
+import apiUrl from '../config';
 
-const CategoryPage = () => {
-  const { categoryName } = useParams();
+const KeywordPosts = () => {
   const [posts, setPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+  const keyword = query.get('keywords');
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchPostsByKeyword = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/posts?category=${categoryName}`);
+        const response = await axios.get(`${apiUrl}/api/posts?keywords=${keyword}`);
         setPosts(response.data);
 
         const initialLikedPosts = {};
@@ -29,12 +32,14 @@ const CategoryPage = () => {
         setLikedPosts(initialLikedPosts);
         setLikeCounts(initialLikeCounts);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching posts by keyword:', error);
       }
     };
 
-    fetchPosts();
-  }, [categoryName]);
+    if (keyword) {
+      fetchPostsByKeyword();
+    }
+  }, [keyword]);
 
   const handleLike = async (postId, liked) => {
     const token = localStorage.getItem('token');
@@ -70,14 +75,13 @@ const CategoryPage = () => {
     }
   };
 
-
   return (
     <div className="container">
       <Header />
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
-          <h2 className="title">{categoryName} の記事一覧</h2>
+          <h2 className="title">{keyword} の投稿一覧</h2>
           <div className="grid">
           {posts.map(post => (
               <PostCard
@@ -95,4 +99,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default KeywordPosts;

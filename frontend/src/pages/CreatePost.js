@@ -5,20 +5,17 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './CreatePost.css';
-import apiUrl from '../config'; 
-import api from '../utils/api';
+import apiUrl from '../config';
 
 const customStyle = {
   ...dark,
   'code[class*="language-"]': {
-    ...dark['code[class*="language-"]'],
     color: '#ffffff',
     background: '#000000',
     textShadow: 'none',
     border: 'none',
   },
   'pre[class*="language-"]': {
-    ...dark['pre[class*="language-"]'],
     color: '#ffffff',
     background: '#000000',
     textShadow: 'none',
@@ -29,56 +26,40 @@ const customStyle = {
 const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [keywords, setKeywords] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // カテゴリデータを取得
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      if (!token) {
-        setError('You must be logged in to create a post.');
-        navigate('/login');  // ログイン画面に遷移
-      }
-    }
-    
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/categories`);
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
       setError('You must be logged in to create a post.');
-      navigate('/login');  // ログイン画面に遷移
+      navigate('/login');
+      return;
+    }
+
+    const keywordArray = keywords.split(' ').filter(keyword => keyword !== '');
+    if (keywordArray.length > 5) {
+      setError('You can only specify up to 5 keywords.');
+      return;
     }
 
     try {
       const response = await axios.post(`${apiUrl}/api/posts`, {
         title,
         content: markdownContent,
-        category: selectedCategory,
+        keywords: keywordArray,
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
-      
+
       console.log('Post created:', response.data);
       setTitle('');
       setMarkdownContent('');
-      setSelectedCategory('');
+      setKeywords('');
       setError('');
       navigate('/');
     } catch (error) {
@@ -87,9 +68,13 @@ const CreatePost = () => {
       if (error.response && error.response.status === 401) {
         setError('Token expired. Please log in again.');
         localStorage.removeItem('token');
-        navigate('/login');  // ログイン画面にリダイレクト
+        navigate('/login');
       }
     }
+  };
+
+  const handleMarkdownChange = (e) => {
+    setMarkdownContent(e.target.value);
   };
 
   // クリップボードにコピー
@@ -103,36 +88,12 @@ const CreatePost = () => {
       });
   };
 
-  // Markdownの変更イベント
-  const handleMarkdownChange = (e) => {
-    setMarkdownContent(e.target.value);
-  };
-
-  const components = {
-    code({ node, inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '');
-      return !inline && match ? (
-        <div className="code-block">
-          <button className="copy-button" onClick={() => copyToClipboard(String(children).replace(/\n$/, ''))}>コピー</button>
-          <SyntaxHighlighter language={match[1]} style={customStyle} PreTag="div" {...props}>
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
-        </div>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    }
-  };
-
 
   return (
     <div className="create-post-container">
       <Link to="/" className="home-button">Homeに戻る</Link>
       <h2 className="title">新しい記事を投稿する</h2>
       <form onSubmit={handleSubmit}>
-      
         <div className="content-preview">
           <div className="form-group content-area">
             <label htmlFor="title">タイトル</label>
@@ -143,20 +104,15 @@ const CreatePost = () => {
               onChange={(e) => setTitle(e.target.value)}
               required
             />
-            <label htmlFor="category">カテゴリ</label>
-            <select
-              id="category"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+            <label htmlFor="keywords">キーワード</label>
+            <input
+              type="text"
+              id="keywords"
+              value={keywords}
+              onChange={(e) => setKeywords(e.target.value)}
+              placeholder="キーワードを半角スペース区切りで5つまで入力"
               required
-            >
-              <option value="">カテゴリを選択</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            />
             <label htmlFor="content">内容</label>
             <textarea
               id="content"
@@ -168,7 +124,13 @@ const CreatePost = () => {
           </div>
           <div className="preview">
             <h3>プレビュー</h3>
-            <ReactMarkdown components={components}>{markdownContent}</ReactMarkdown>
+            <ReactMarkdown components={{ code: ({ node, inline, className, children, ...props }) => (
+              <SyntaxHighlighter style={customStyle} language={className ? className.replace('language-', '') : ''} PreTag="div" {...props}>
+                {children}
+              </SyntaxHighlighter>
+            ) }}>
+              {markdownContent}
+            </ReactMarkdown>
           </div>
         </div>
         <button type="submit" className="button">投稿する</button>

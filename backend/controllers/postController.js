@@ -1,24 +1,15 @@
 const Post = require('../models/post');
-const Category = require('../models/category');
 
-// Get all posts
 const getPosts = async (req, res) => {
-  const categoryName = req.query.category;
+  const keywordQuery = req.query.keywords ;
 
   try {
     let posts;
-    if (categoryName) {
-      const category = await Category.findOne({ name: categoryName });
-      if (category) {
-        posts = await Post.find({ category: category._id })
-                            .populate('category')
-                            .populate('author', 'username');
-      } else {
-        posts = [];
-      }
+    if (keywordQuery) {
+      posts = await Post.find({ keywords: { $in: keywordQuery.split(' ') }})
+                        .populate('author', 'username');
     } else {
       posts = await Post.find()
-                        .populate('category')
                         .populate('author', 'username');
     }
 
@@ -34,19 +25,23 @@ const getPosts = async (req, res) => {
   }
 };
 
-// Create a new post
 const createPost = async (req, res) => {
-  const { title, content, category } = req.body;
-
-  if (!title || !content || !category) {
+  const { title, content, keywords } = req.body;
+  
+  if (!title || !content || !keywords || keywords.length === 0) {
     return res.status(400).json({ message: "All fields are required." });
   }
+
+  if (keywords.length > 5) {
+    return res.status(400).json({ message: "You can specify up to 5 keywords." });
+  }
+
   try {
     const newPost = new Post({
       title,
       content,
-      category,
-      author: req.userId,  // 認証されたユーザーのIDを保存
+      keywords,
+      author: req.userId,
     });
 
     await newPost.save();
@@ -57,7 +52,6 @@ const createPost = async (req, res) => {
   }
 };
 
-// Get a single post by ID
 const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -77,14 +71,13 @@ const updatePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // 投稿者かどうかを確認
     if (post.author.toString() !== req.userId) {
       return res.status(403).json({ message: 'You do not have permission to edit this post.' });
     }
 
     post.title = req.body.title || post.title;
     post.content = req.body.content || post.content;
-    post.category = req.body.category || post.category;
+    post.keywords = req.body.keywords || post.keywords;
 
     const updatedPost = await post.save();
     res.json(updatedPost);
@@ -101,7 +94,6 @@ const deletePost = async (req, res) =>{
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // 投稿者かどうかを確認
     if (post.author.toString() !== req.userId) {
       return res.status(403).json({ message: 'You do not have permission to delete this post.' });
     }
@@ -114,11 +106,10 @@ const deletePost = async (req, res) =>{
   }
 }
 
-// ユーザーの投稿一覧を取得
 const getUserPosts = async (req, res) => {
   try {
-    const userId = req.userId;  // authMiddlewareによって付与されるuserId
-    const posts = await Post.find({ author: userId }).populate('category');  // ユーザーIDに基づいて投稿を検索
+    const userId = req.userId;
+    const posts = await Post.find({ author: userId })
     const postWithLikeCount = posts.map(post => ({
       ...post._doc,
       likesCount: post.likes.length, 
@@ -132,7 +123,6 @@ const getUserPosts = async (req, res) => {
   }
 };
 
-// 「いいね」を追加する
 const likePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -140,12 +130,11 @@ const likePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // 既に「いいね」していないか確認
     if (post.likes.includes(req.userId)) {
       return res.status(400).json({ message: 'You already liked this post' });
     }
 
-    post.likes.push(req.userId); // ユーザーIDを「いいね」リストに追加
+    post.likes.push(req.userId); 
     await post.save();
 
     res.json({ message: 'Post liked', likes: post.likes.length });
@@ -154,7 +143,6 @@ const likePost = async (req, res) => {
   }
 };
 
-// 「いいね」を解除する
 const unlikePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -162,12 +150,11 @@ const unlikePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // まだ「いいね」していない場合
     if (!post.likes.includes(req.userId)) {
       return res.status(400).json({ message: 'You have not liked this post yet' });
     }
 
-    post.likes = post.likes.filter(userId => userId.toString() !== req.userId); // ユーザーIDを「いいね」リストから削除
+    post.likes = post.likes.filter(userId => userId.toString() !== req.userId);
     await post.save();
 
     res.json({ message: 'Post unliked', likes: post.likes.length });
@@ -179,8 +166,8 @@ const unlikePost = async (req, res) => {
 const getPostsByAuthor = async (req, res) => {
   try {
     const posts = await Post.find({ author: req.params.authorId })
-                                  .populate('author')
-                                  .populate('category');
+                                  .populate('author','username')
+                                  .populate('keywords');
     const postWithLikeCount = posts.map(post => ({
       ...post._doc,
       likesCount: post.likes.length, 
@@ -192,6 +179,21 @@ const getPostsByAuthor = async (req, res) => {
   }
 };
 
+const getKeywordStatistics = async (req, res) => {
+  try {
+    const keywordStats = await Post.aggregate([
+      { $unwind: "$keywords" }, 
+      { $group: { _id: "$keywords", count: { $sum: 1 } } }, 
+      { $sort: { count: -1 } }, 
+      { $limit: 20 } 
+    ]);
+
+    res.json(keywordStats);
+  } catch (err) {
+    console.error('Error fetching keyword statistics:', err.message);
+    res.status(500).json({ message: 'サーバーエラーが発生しました。' });
+  }
+};
 
 module.exports = {
   getPosts,
@@ -203,4 +205,5 @@ module.exports = {
   likePost,
   unlikePost,
   getPostsByAuthor,
+  getKeywordStatistics,
 };
