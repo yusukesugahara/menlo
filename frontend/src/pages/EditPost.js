@@ -11,14 +11,12 @@ import apiUrl from '../config';
 const customStyle = {
   ...dark,
   'code[class*="language-"]': {
-    ...dark['code[class*="language-"]'],
     color: '#ffffff',
     background: '#000000',
     textShadow: 'none',
     border: 'none',
   },
   'pre[class*="language-"]': {
-    ...dark['pre[class*="language-"]'],
     color: '#ffffff',
     background: '#000000',
     textShadow: 'none',
@@ -31,34 +29,22 @@ const EditPost = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [keywords, setKeywords] = useState('');
   const [error, setError] = useState('');
-  const [isOwner, setIsOwner] = useState(false);  
-  
+  const [isOwner, setIsOwner] = useState(false);
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/categories`);
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-
     const fetchPost = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/posts/${id}`);
         const post = response.data;
         setTitle(post.title);
         setMarkdownContent(post.content);
-        setSelectedCategory(post.category); 
-
-        const userId = localStorage.getItem('userId'); 
+        setKeywords(post.keywords.join(' ')); // キーワードをスペースで区切って表示
+        
+        const userId = localStorage.getItem('userId');
         if (post.author === userId) {
-          setIsOwner(true); 
+          setIsOwner(true);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
@@ -73,21 +59,28 @@ const EditPost = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
-      if (!token) {
-        setError('You must be logged in to create a post.');
-        navigate('/login');  // ログイン画面に遷移
-      }
+      setError('You must be logged in to edit a post.');
+      navigate('/login');
+      return;
     }
+
+    const keywordArray = keywords.split(' ').filter((kw) => kw !== ''); // 空白を除く
+    if (keywordArray.length > 5) {
+      setError('You can specify up to 5 keywords.');
+      return;
+    }
+
     try {
       const response = await axios.put(`${apiUrl}/api/posts/${id}`, {
         title,
         content: markdownContent,
-        category: selectedCategory,
+        keywords: keywordArray, // キーワードを配列として送信
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`  // JWTトークンをヘッダーに追加
+          'Authorization': `Bearer ${token}`
         }
       });
+
       console.log('Post updated:', response.data);
       navigate(`/post/${id}`);
     } catch (error) {
@@ -98,6 +91,10 @@ const EditPost = () => {
 
   const handleMarkdownChange = (e) => {
     setMarkdownContent(e.target.value);
+  };
+
+  const handleKeywordsChange = (e) => {
+    setKeywords(e.target.value); // キーワード入力を管理
   };
 
   const copyToClipboard = (text) => {
@@ -121,7 +118,7 @@ const EditPost = () => {
       );
     }
   };
-  
+
   return (
     <div className="edit-post-container">
       <Link to="/" className="home-button">Homeに戻る</Link>
@@ -137,20 +134,15 @@ const EditPost = () => {
               onChange={(e) => setTitle(e.target.value)}
               required
             />
-            <label htmlFor="category">カテゴリ</label>
-            <select
-              id="category"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+            <label htmlFor="keywords">キーワード</label>
+            <input
+              type="text"
+              id="keywords"
+              value={keywords}
+              onChange={handleKeywordsChange}
+              placeholder="キーワードをスペースで区切って5つまで"
               required
-            >
-              <option value="">カテゴリを選択</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            />
             <label htmlFor="content">内容</label>
             <textarea
               id="content"
@@ -167,10 +159,7 @@ const EditPost = () => {
         </div>
         <button type="submit" className="btn">更新する</button>
       </form>
-      <DeleteButton
-        postId={id}
-        isOwner = {isOwner}
-        />
+      <DeleteButton postId={id} isOwner={isOwner} />
       <div className="markdown-tutorial">
         <h3>Markdownの書き方</h3>
         <ul>
@@ -190,10 +179,6 @@ const EditPost = () => {
         </ul>
       </div>
     </div>
-
-
-
-
   );
 };
 

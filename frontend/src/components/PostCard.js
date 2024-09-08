@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './PostCard.css'
+import './PostCard.css';
 
 const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
   return (
@@ -10,19 +10,25 @@ const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
       </Link>
       <div className='card-info'>
         <p className="card-info-text">
-            {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
-          </p>
+          {new Date(post.createdAt).toLocaleDateString('ja-JP', {year: 'numeric',month: 'numeric',day: 'numeric',})}
+        </p>
         <Link to={`/author/${post.author._id}`} className="card-link">
           {post.author.username}
         </Link>
       </div>                
-        <p className="card-info-text">
-          {post.category ? (
-              <Link to={`/category/${post.category.name}`} className="category-link card-link">
-                {post.category.name}
-              </Link>
-            ) : 'カテゴリなし'}
-        </p>
+      <div className="card-info-text">
+        {post.keywords && post.keywords.length > 0 ? (
+          post.keywords.map((keyword, index) => (
+            <Link 
+              to={`/posts?keywords=${keyword}`} 
+              key={index} 
+              className="keyword-link card-link"
+            >
+              {keyword}&nbsp;
+            </Link>
+          ))
+        ) : 'キーワードなし'}
+      </div>
       <div className="button-container">
         <button 
           onClick={() => handleLike(post._id, likedPosts[post._id])}

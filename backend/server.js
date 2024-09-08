@@ -3,8 +3,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const postRoutes = require('./routes/postRoutes');
-const categoryRoutes = require('./routes/categoryRoutes');
-const initializeCategories = require('./initializeCategories'); 
 const authRoutes = require('./routes/authRoutes');
 
 
@@ -23,10 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', postRoutes);
-app.use('/api', categoryRoutes);
 app.use('/api/auth', authRoutes); 
-
-initializeCategories(); 
 
 // 404エラー対応ミドルウェア
 app.use((req, res, next) => {

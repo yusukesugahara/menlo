@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
-import CategoryPage from './pages/CategoryPage';
+import KeywordPosts from './pages/KeywordPosts';
 import EditPost from './pages/EditPost'; 
 import Login from './pages/Login'; 
 import SignUp from './pages/SignUp'; 
@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/create" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />
-        <Route path="/category/:categoryName" element={<CategoryPage />} /> 
+        <Route path="/posts" element={<KeywordPosts />} /> 
         <Route path="/edit/:id" element={<EditPost />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />

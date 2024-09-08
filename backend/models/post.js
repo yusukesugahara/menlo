@@ -9,9 +9,8 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+  keywords: {
+    type: [String],
     required: true,
   },
   author: {
