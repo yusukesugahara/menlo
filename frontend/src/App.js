@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp'; 
 import UserPage from './pages/UserPage';
 import AuthorPosts from './pages/AuthorPosts'; 
+import SearchResults from './pages/SearchResults'; 
+
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/user-page" element={<UserPage />} />
         <Route path="/author/:authorId" element={<AuthorPosts />} />
+        <Route path="/search" element={<SearchResults />} /> 
       </Routes>
     </Router>
   );
