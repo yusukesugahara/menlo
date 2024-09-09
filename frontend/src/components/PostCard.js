@@ -1,8 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { handleLike } from '../utils/likeHandler';
 import './PostCard.css';
 
-const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
+const PostCard = ({ post, likedPosts, setLikedPosts, setLikeCounts, likeCounts }) => {
+
+  const onLikeClick = () => {
+    handleLike(post._id, likedPosts[post._id], setLikedPosts, setLikeCounts);
+  };
+
   return (
     <div className="card" key={post._id}>
       <Link to={`/post/${post._id}`} className="card-link">
@@ -31,7 +37,7 @@ const PostCard = ({ post, likedPosts, handleLike, likeCounts }) => {
       </div>
       <div className="button-container">
         <button 
-          onClick={() => handleLike(post._id, likedPosts[post._id])}
+          onClick={onLikeClick}
           className={likedPosts[post._id] ? 'like-button liked' : 'like-button not-liked'}
         >Like
         </button>

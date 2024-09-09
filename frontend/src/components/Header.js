@@ -25,19 +25,20 @@ const Header = () => {
         {token ? (
           // ログインしている場合
           <>
-            <Link to="/user-page" className="link-no-underline">
-              <button className='header-button'>UserPage</button>
+            <Link to="/user-page" className="header-button link-no-underline">
+              UserPage
             </Link>
             <button onClick={handleLogout} className='header-button'>Logout</button>
+
           </>
         ) : (
           // ログインしていない場合
           <>
-            <Link to="/login" className="link-no-underline">
-              <button className='header-button'>Login</button>
+            <Link to="/login" className="header-button link-no-underline">
+              Login
             </Link>
-            <Link to="/signup" className="link-no-underline">
-              <button className='header-button'>Sign Up</button>
+            <Link to="/signup" className="header-button link-no-underline">
+              Sign Up
             </Link>
           </>
         )}

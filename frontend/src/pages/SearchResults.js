@@ -40,39 +40,6 @@ const SearchResults = () => {
     }
   }, [query]);
 
-  const handleLike = async (postId, liked) => {
-    const token = localStorage.getItem('token');
-  
-    try {
-      if (liked) {
-        await axios.post(`${apiUrl}/api/posts/${postId}/unlike`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setLikedPosts(prevState => ({
-          ...prevState,
-          [postId]: false
-        }));
-        setLikeCounts(prevCounts => ({
-          ...prevCounts,
-          [postId]: prevCounts[postId] - 1
-        }));
-      } else {
-        await axios.post(`${apiUrl}/api/posts/${postId}/like`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setLikedPosts(prevState => ({
-          ...prevState,
-          [postId]: true
-        }));
-        setLikeCounts(prevCounts => ({
-          ...prevCounts,
-          [postId]: prevCounts[postId] + 1 
-        }));
-      }
-    } catch (error) {
-      console.error('Error updating like status', error);
-    }
-  };
 
   return (
     <div className="container">
@@ -87,7 +54,8 @@ const SearchResults = () => {
               key={post._id}
               post={post}
               likedPosts={likedPosts}
-              handleLike={handleLike}
+              setLikedPosts={setLikedPosts} 
+              setLikeCounts={setLikeCounts} 
               likeCounts={likeCounts}
             />
             ))}
