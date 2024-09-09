@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import SearchBar from './SearchBar';
 import './Header.css'
 
 const Header = () => {
@@ -18,8 +19,9 @@ const Header = () => {
   return (
     <header>
       <h1>Menlo</h1>
+      
       <nav className='header-nav'>
-        {/* ログインしているかどうかでボタンを切り替える */}
+        <SearchBar />
         {token ? (
           // ログインしている場合
           <>

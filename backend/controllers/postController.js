@@ -195,6 +195,31 @@ const getKeywordStatistics = async (req, res) => {
   }
 };
 
+
+const searchPosts = async (req, res) => {
+  const { query } = req.query;
+  try {
+    const posts = await Post.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } }, 
+        { content: { $regex: query, $options: 'i' } },
+        { keywords: { $regex: query, $options: 'i' } }  
+      ]
+    }).populate('author', 'username');
+
+    const postWithLikeCount = posts.map(post => ({
+      ...post._doc,
+      likesCount: post.likes.length, 
+    }));
+
+    res.json(postWithLikeCount);
+  } catch (err) {
+    console.error('Error searching posts:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 module.exports = {
   getPosts,
   createPost,
@@ -206,4 +231,5 @@ module.exports = {
   unlikePost,
   getPostsByAuthor,
   getKeywordStatistics,
+  searchPosts,
 };
