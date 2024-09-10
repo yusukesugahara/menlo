@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const profileRoutes = require('./routes/profileRoutes');
 
 dotenv.config();
 
@@ -22,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use('/api', postRoutes);
 app.use('/api/auth', authRoutes); 
+app.use('/api/profiles', profileRoutes);
 
 // 404エラー対応ミドルウェア
 app.use((req, res, next) => {
