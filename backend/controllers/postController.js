@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const Profile = require('../models/Profile'); 
 
 const getPosts = async (req, res) => {
   const keywordQuery = req.query.keywords ;
@@ -172,8 +173,13 @@ const getPostsByAuthor = async (req, res) => {
       ...post._doc,
       likesCount: post.likes.length, 
     }));
+    const profile = await Profile.findOne({ user: req.params.authorId }).select('bio');
 
-    res.json(postWithLikeCount);
+    if (!profile) {
+      return res.status(404).json({ message: 'プロフィールが見つかりません。' });
+    }
+
+    res.json({postWithLikeCount, bio: profile.bio });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

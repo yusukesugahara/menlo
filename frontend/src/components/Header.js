@@ -5,14 +5,12 @@ import './Header.css'
 
 const Header = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');  // JWTトークンを取得してログイン状態を判定
+  const token = localStorage.getItem('token');
 
   const handleLogout = () => {
-    // ローカルストレージからトークンを削除
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
 
-    // ログイン画面にリダイレクト
     navigate('/login');
   };
 
@@ -23,7 +21,6 @@ const Header = () => {
       <nav className='header-nav'>
         <SearchBar />
         {token ? (
-          // ログインしている場合
           <>
             <Link to="/user-page" className="header-button link-no-underline">
               UserPage
@@ -32,12 +29,11 @@ const Header = () => {
 
           </>
         ) : (
-          // ログインしていない場合
           <>
             <Link to="/login" className="header-button link-no-underline">
               Login
             </Link>
-            <Link to="/signup" className="header-button link-no-underline">
+            <Link to="/sign-up" className="header-button link-no-underline">
               Sign Up
             </Link>
           </>
