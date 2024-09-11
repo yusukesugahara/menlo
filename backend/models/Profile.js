@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const profileSchema = new mongoose.Schema({
+const ProfileSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
@@ -11,4 +11,4 @@ const profileSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Profile', profileSchema);
+module.exports = mongoose.model('Profile', ProfileSchema);

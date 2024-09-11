@@ -1,5 +1,5 @@
 const Post = require('../models/post');
-const Profile = require('../models/Profile'); 
+const Profile = require('../models/profile'); 
 
 const getPosts = async (req, res) => {
   const keywordQuery = req.query.keywords ;
