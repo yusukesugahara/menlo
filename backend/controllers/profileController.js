@@ -3,11 +3,11 @@ const User = require('../models/user');
 
 const getProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.params.userId }).populate('user');
-    if (!profile) {
+    const userprofile = await Profile.findOne({ user: req.params.userId }).populate('user');
+    if (!userprofile) {
       return res.status(404).json({ message: 'プロフィールが見つかりません。' });
     }
-    res.json(profile);
+    res.json(userprofile);
   } catch (err) {
     res.status(500).json({ message: 'サーバーエラーが発生しました。' });
   }
@@ -22,12 +22,12 @@ const updateProfile = async (req, res) => {
     }
 
 
-    const profile = await Profile.findOneAndUpdate(
+    const userprofile = await Profile.findOneAndUpdate(
       { user: req.params.userId },
       { bio },
       { new: true }
     );
-    if (!profile) {
+    if (!userprofile) {
       return res.status(404).json({ message: 'プロフィールが見つかりません。' });
     }
 
@@ -41,7 +41,7 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'ユーザーが見つかりません。' });
     }
 
-    res.json({ profile, user , message: 'プロフィールを更新しました。'});
+    res.json({ userprofile, user , message: 'プロフィールを更新しました。'});
   } catch (err) {
     res.status(500).json({ message: 'サーバーエラーが発生しました。' });
   }
@@ -49,8 +49,8 @@ const updateProfile = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOneAndDelete({ user: req.params.userId });
-    if (!profile) {
+    const userprofile = await Profile.findOneAndDelete({ user: req.params.userId });
+    if (!userprofile) {
       return res.status(404).json({ message: 'プロフィールが見つかりません。' });
     }
     res.json({ message: 'プロフィールが削除されました。' });
