@@ -173,13 +173,13 @@ const getPostsByAuthor = async (req, res) => {
       ...post._doc,
       likesCount: post.likes.length, 
     }));
-    const profile = await Profile.findOne({ user: req.params.authorId }).select('bio');
+    const userprofile = await Profile.findOne({ user: req.params.authorId }).select('bio');
 
-    if (!profile) {
+    if (!userprofile) {
       return res.status(404).json({ message: 'プロフィールが見つかりません。' });
     }
 
-    res.json({postWithLikeCount, bio: profile.bio });
+    res.json({postWithLikeCount, bio: userprofile.bio });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
