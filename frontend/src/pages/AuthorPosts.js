@@ -10,6 +10,7 @@ const AuthorPosts = () => {
   const { authorId } = useParams(); 
   const [posts, setPosts] = useState([]);
   const [authorName, setAuthorName] = useState('');
+  const [bio,setBio] = useState('')
   const [likedPosts, setLikedPosts] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
 
@@ -17,13 +18,14 @@ const AuthorPosts = () => {
     const fetchAuthorPosts = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/author/${authorId}`);
-        setPosts(response.data);
-        if (response.data.length > 0) {
-          setAuthorName(response.data[0].author.username); // 作者の名前をセット
+        setPosts(response.data.postWithLikeCount);
+        if (response.data.postWithLikeCount.length > 0) {
+          setAuthorName(response.data.postWithLikeCount[0].author.username); // 作者の名前をセット
+          setBio(response.data.bio)
           const initialLikedPosts = {};
           const initialLikeCounts = {};
   
-          response.data.forEach(post => {
+          response.data.postWithLikeCount.forEach(post => {
             initialLikedPosts[post._id] = post.likes.includes(localStorage.getItem('userId'));
             initialLikeCounts[post._id] = post.likes.length;
           });
@@ -47,6 +49,8 @@ const AuthorPosts = () => {
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
+          <h2 className="title">{authorName} のプロフィール</h2>
+          <p>{bio}</p>
           <h2 className="title">{authorName} の記事一覧</h2>
           <div className="grid">
           {posts.map(post => (

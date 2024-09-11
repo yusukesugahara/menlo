@@ -5,10 +5,15 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import PostCard from '../components/PostCard';
 import apiUrl from '../config'; 
+import './UserPage.css'
 
 const UserPosts = () => {
-  const [posts, setPosts] = useState([]);
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  
+  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
   const [likedPosts, setLikedPosts] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
@@ -51,9 +56,39 @@ const UserPosts = () => {
         }
       }
     };
-
     fetchUserPosts();
+
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${apiUrl}/api/profiles/${localStorage.getItem('userId')}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsername(response.data.user.username);
+        setBio(response.data.bio);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        setError('プロフィールの取得に失敗しました。');
+      }
+    };
+    fetchProfile();
+    
   }, [navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${apiUrl}/api/profiles/${localStorage.getItem('userId')}`, { username, bio }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessage('プロフィールが更新されました');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('プロフィールの更新に失敗しました。');
+    }
+  };
+
 
   return (
     <div className="container">
@@ -61,7 +96,31 @@ const UserPosts = () => {
       <div className='content-wrapper'>
         <Sidebar />
         <div className="main-content">
-          {error && <p>{error}</p>}
+          <h2 className="title">プロフィール編集</h2>
+          {message && <p className="message">{message}</p>}
+          {error && <p className="error">{error}</p>}
+          <form onSubmit={handleSubmit}>
+            <div className="form-group form-group-profile">
+              <label htmlFor="username">ユーザー名:</label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group form-group-profile">
+              <label htmlFor="bio">プロフィール概要:</label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className='form-group-profile-button'>更新</button>
+          </form>
           <h2 className="title">My 投稿一覧</h2>
           <div className="grid">
             {posts.map(post => (

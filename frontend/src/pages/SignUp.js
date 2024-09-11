@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import apiUrl from '../config';
 
@@ -19,6 +19,7 @@ const SignUp = () => {
         email,
         password,
       });
+      
       console.log('User signed up:', response.data);
       navigate('/login'); 
     } catch (error) {
@@ -67,6 +68,7 @@ const SignUp = () => {
         </div>
         {error && <p className="error">{error}</p>}
         <button type="submit" className="signup-button">Sign Up</button>
+        <Link to="/login" className="signup-link">Login</Link>
       </form>
     </div>
   );
