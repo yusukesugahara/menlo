@@ -10,6 +10,9 @@ frontend: react
 backend: node.js express.js  
 db: mongoDB  
 
+構成図  
+![image](https://github.com/user-attachments/assets/5f1475c1-ca59-4e70-b2a7-53b0a5642f81)
+
 
 機能一覧  
 ・ユーザー登録、ユーザーログイン  
