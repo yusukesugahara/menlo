@@ -2,7 +2,10 @@ ChatGPTのプロンプト投稿サイトです。
 
 サイトのURLはこちら  
 https://menlo.vercel.app/  
-  
+
+作成についての詳細はQiita記事に書いています。  
+https://qiita.com/sghr2020/items/120d22435397215851cd
+
 backend start:node server.js  
 frontend start:nmp start  
 
